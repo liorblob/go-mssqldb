@@ -7,8 +7,8 @@ import (
 )
 
 type timeoutConn struct {
-	c             net.Conn
-	timeout       time.Duration
+	c       net.Conn
+	timeout time.Duration
 }
 
 func newTimeoutConn(conn net.Conn, timeout time.Duration) *timeoutConn {
@@ -59,13 +59,13 @@ func (c timeoutConn) SetReadDeadline(t time.Time) error {
 }
 
 func (c timeoutConn) SetWriteDeadline(t time.Time) error {
-	panic("Not implemented")
+	return c.c.SetWriteDeadline(t)
 }
 
 // this connection is used during TLS Handshake
 // TDS protocol requires TLS handshake messages to be sent inside TDS packets
 type tlsHandshakeConn struct {
-	buf *tdsBuffer
+	buf           *tdsBuffer
 	packetPending bool
 	continueRead  bool
 }
@@ -125,7 +125,8 @@ func (c *tlsHandshakeConn) SetReadDeadline(t time.Time) error {
 }
 
 func (c *tlsHandshakeConn) SetWriteDeadline(t time.Time) error {
-	panic("Not implemented")
+	// Do nothing...
+	return nil
 }
 
 // this connection just delegates all methods to it's wrapped connection
@@ -164,5 +165,5 @@ func (c passthroughConn) SetReadDeadline(t time.Time) error {
 }
 
 func (c passthroughConn) SetWriteDeadline(t time.Time) error {
-	panic("Not implemented")
+	return c.c.SetWriteDeadline(t)
 }
